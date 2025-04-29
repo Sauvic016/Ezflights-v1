@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== FLIGHT-RELATED MODELS =====
+
+model City {
+  id       Int       @id @default(autoincrement())
+  name     String
+  airports Airport[]
+}
+
+model Airport {
+  id            Int      @id @default(autoincrement())
+  name          String
+  cityId        Int
+  city          City     @relation(fields: [cityId], references: [id])
+  Flight        Flight[] @relation("DestinationAirport")
+  originFlights Flight[] @relation("OriginAirport")
+}
+
+model Flight {
+  id            Int          @id @default(autoincrement())
+  flightNo      String
+  originId      Int
+  destinationId Int
+  airplaneId    Int
+  departureTime DateTime
+  arrivalTime   DateTime
+  totalSeats    Int // Total number of seats available on this flight
+  basePrice     Float // Base price for the flight
+  origin        Airport      @relation("OriginAirport", fields: [originId], references: [id])
+  destination   Airport      @relation("DestinationAirport", fields: [destinationId], references: [id])
+  airplane      Airplane     @relation(fields: [airplaneId], references: [id])
+  FlightSeat    FlightSeat[]
+}
+
+model Airplane {
+  id     Int      @id @default(autoincrement())
+  model  String
+  seats  Seat[]
+  Flight Flight[]
+}
+
+model Seat {
+  id         Int          @id @default(autoincrement())
+  seatNumber String
+  seatClass  String
+  airplaneId Int
+  airplane   Airplane     @relation(fields: [airplaneId], references: [id])
+  FlightSeat FlightSeat[]
+}
+
+model FlightSeat {
+  id       Int     @id @default(autoincrement())
+  flightId Int
+  seatId   Int
+  isBooked Boolean @default(false)
+  flight   Flight  @relation(fields: [flightId], references: [id])
+  seat     Seat    @relation(fields: [seatId], references: [id])
+}
+
+// ===== BOOKING-RELATED MODELS =====
+
+model Booking {
+  id        Int        @id @default(autoincrement())
+  contactId Int
+  flightId  String
+  status    StatusType @default(PENDING)
+  bookingAt DateTime   @default(now())
+  contact   Contact    @relation(fields: [contactId], references: [id])
+  travelers Traveler[]
+  payments  Payment[]
+}
+
+enum StatusType {
+  CONFIRMED
+  CANCELLED
+  PENDING
+}
+
+model Contact {
+  id        Int       @id @default(autoincrement())
+  email     String
+  phone     String
+  createdAt DateTime  @default(now())
+  userId    String? // Reference to User ID from the auth-service (via API)
+  bookings  Booking[]
+}
+
+model Traveler {
+  id         Int      @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  dob        DateTime // Date of birth
+  bookingId  Int
+  seatNumber String? // Optional seat number
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+}
+
+// ===== USER-RELATED MODELS =====
+
+model User {
+  id            Int        @id @default(autoincrement())
+  email         String     @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  phone         String?
+  isActive      Boolean    @default(true)
+  emailVerified Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  lastLoginAt   DateTime?
+  userRoles     UserRole[]
+}
+
+model Role {
+  id          Int        @id @default(autoincrement())
+  name        RoleType   @unique
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  userRoles   UserRole[]
+}
+
+model UserRole {
+  userId     Int
+  roleId     Int
+  assignedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+}
+
+enum RoleType {
+  Admin
+  Airline
+  User
+}
+
+// ===== NOTIFICATION-RELATED MODELS =====
+
+model Notification {
+  id               Int                @id @default(autoincrement())
+  subject          String
+  content          String
+  recipientEmail   String
+  status           NotificationStatus @default(PENDING)
+  notificationTime DateTime
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+enum NotificationStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// ===== PAYMENT-RELATED MODELS =====
+
+model Payment {
+  id            Int           @id @default(autoincrement())
+  bookingId     Int
+  amount        Float
+  currency      String        @default("USD")
+  paymentMethod PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  transactionId String? // External payment processor transaction ID
+  paymentDate   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  BANK_TRANSFER
+  PAYPAL
+  WALLET
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
