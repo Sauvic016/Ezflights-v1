@@ -1,23 +1,20 @@
 import express from "express";
 import dotenv from "dotenv";
-import { prisma } from "@repo/database/client";
+import apiRoutes from "./routes/index";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-app.get("/info", async (req, res) => {
-  const ab = await prisma.city.create({
-    data: {
-      name: "Bengaluru",
-    },
-  });
-  console.log(ab);
-  res.status(200).json({
-    message: "flight service is working",
-    data: ab,
-  });
+// Middleware
+app.use(express.json());
+// Routes
+app.use("/api", apiRoutes);
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
 });
 
 app.listen(PORT, () => {

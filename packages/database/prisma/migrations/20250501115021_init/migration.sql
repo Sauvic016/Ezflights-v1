@@ -1,3 +1,26 @@
+CREATE OR REPLACE FUNCTION generate_custom_id(prefix text, start_value smallint, padding_length smallint) RETURNS text AS $$
+DECLARE
+    new_value smallint;
+    formatted_id text;
+BEGIN
+    SELECT max(CAST(SUBSTRING(id, length(prefix) + 1) AS smallint)) INTO new_value FROM "Flight"; -- Change "Product" to the actual table name
+    
+    IF new_value IS NULL THEN
+        new_value := start_value;
+    ELSE
+        new_value := new_value + 1;
+    END IF;
+
+    formatted_id := prefix || lpad(new_value::text, padding_length, '0');
+    
+    RETURN formatted_id;
+END;
+$$ LANGUAGE PLPGSQL VOLATILE;
+
+
+-- CreateEnum
+CREATE TYPE "SeatClass" AS ENUM ('BUSINESS', 'ECONOMY', 'PREMIUM_ECONOMY', 'FIRST_CLASS');
+
 -- CreateEnum
 CREATE TYPE "StatusType" AS ENUM ('CONFIRMED', 'CANCELLED', 'PENDING');
 
@@ -32,8 +55,7 @@ CREATE TABLE "Airport" (
 
 -- CreateTable
 CREATE TABLE "Flight" (
-    "id" SERIAL NOT NULL,
-    "flightNo" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT generate_custom_id('EZ'::text, 1::smallint, 5::smallint),
     "originId" INTEGER NOT NULL,
     "destinationId" INTEGER NOT NULL,
     "airplaneId" INTEGER NOT NULL,
@@ -49,6 +71,7 @@ CREATE TABLE "Flight" (
 CREATE TABLE "Airplane" (
     "id" SERIAL NOT NULL,
     "model" TEXT NOT NULL,
+    "totalSeat" INTEGER NOT NULL,
 
     CONSTRAINT "Airplane_pkey" PRIMARY KEY ("id")
 );
@@ -56,21 +79,13 @@ CREATE TABLE "Airplane" (
 -- CreateTable
 CREATE TABLE "Seat" (
     "id" SERIAL NOT NULL,
-    "seatNumber" TEXT NOT NULL,
-    "seatClass" TEXT NOT NULL,
-    "airplaneId" INTEGER NOT NULL,
-
-    CONSTRAINT "Seat_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "FlightSeat" (
-    "id" SERIAL NOT NULL,
-    "flightId" INTEGER NOT NULL,
-    "seatId" INTEGER NOT NULL,
+    "row" INTEGER NOT NULL,
+    "column" TEXT NOT NULL,
+    "flightId" TEXT NOT NULL,
+    "seatClass" "SeatClass" NOT NULL DEFAULT 'ECONOMY',
     "isBooked" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "FlightSeat_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Seat_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -175,6 +190,9 @@ CREATE TABLE "Payment" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Seat_flightId_row_column_key" ON "Seat"("flightId", "row", "column");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
@@ -193,13 +211,7 @@ ALTER TABLE "Flight" ADD CONSTRAINT "Flight_destinationId_fkey" FOREIGN KEY ("de
 ALTER TABLE "Flight" ADD CONSTRAINT "Flight_airplaneId_fkey" FOREIGN KEY ("airplaneId") REFERENCES "Airplane"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Seat" ADD CONSTRAINT "Seat_airplaneId_fkey" FOREIGN KEY ("airplaneId") REFERENCES "Airplane"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FlightSeat" ADD CONSTRAINT "FlightSeat_flightId_fkey" FOREIGN KEY ("flightId") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "FlightSeat" ADD CONSTRAINT "FlightSeat_seatId_fkey" FOREIGN KEY ("seatId") REFERENCES "Seat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Seat" ADD CONSTRAINT "Seat_flightId_fkey" FOREIGN KEY ("flightId") REFERENCES "Flight"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Booking" ADD CONSTRAINT "Booking_contactId_fkey" FOREIGN KEY ("contactId") REFERENCES "Contact"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

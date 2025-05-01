@@ -31,8 +31,7 @@ model Airport {
 }
 
 model Flight {
-  id            Int          @id @default(autoincrement())
-  flightNo      String
+  id            String   @id @default(dbgenerated("generate_custom_id('EZ'::text, 1::smallint, 5::smallint)"))
   originId      Int
   destinationId Int
   airplaneId    Int
@@ -40,35 +39,36 @@ model Flight {
   arrivalTime   DateTime
   totalSeats    Int // Total number of seats available on this flight
   basePrice     Float // Base price for the flight
-  origin        Airport      @relation("OriginAirport", fields: [originId], references: [id])
-  destination   Airport      @relation("DestinationAirport", fields: [destinationId], references: [id])
-  airplane      Airplane     @relation(fields: [airplaneId], references: [id])
-  FlightSeat    FlightSeat[]
+  origin        Airport  @relation("OriginAirport", fields: [originId], references: [id])
+  destination   Airport  @relation("DestinationAirport", fields: [destinationId], references: [id])
+  airplane      Airplane @relation(fields: [airplaneId], references: [id])
+  Seat          Seat[]
 }
 
 model Airplane {
-  id     Int      @id @default(autoincrement())
-  model  String
-  seats  Seat[]
-  Flight Flight[]
+  id        Int      @id @default(autoincrement())
+  model     String
+  totalSeat Int
+  flights   Flight[]
 }
 
 model Seat {
-  id         Int          @id @default(autoincrement())
-  seatNumber String
-  seatClass  String
-  airplaneId Int
-  airplane   Airplane     @relation(fields: [airplaneId], references: [id])
-  FlightSeat FlightSeat[]
+  id        Int       @id @default(autoincrement())
+  row       Int
+  column    String
+  flightId  String
+  seatClass SeatClass @default(ECONOMY)
+  isBooked  Boolean   @default(false)
+  flight    Flight    @relation(fields: [flightId], references: [id])
+
+  @@unique([flightId, row, column])
 }
 
-model FlightSeat {
-  id       Int     @id @default(autoincrement())
-  flightId Int
-  seatId   Int
-  isBooked Boolean @default(false)
-  flight   Flight  @relation(fields: [flightId], references: [id])
-  seat     Seat    @relation(fields: [seatId], references: [id])
+enum SeatClass {
+  BUSINESS
+  ECONOMY
+  PREMIUM_ECONOMY
+  FIRST_CLASS
 }
 
 // ===== BOOKING-RELATED MODELS =====
