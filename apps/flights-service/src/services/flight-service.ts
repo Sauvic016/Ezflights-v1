@@ -1,12 +1,12 @@
 import { prisma } from "@repo/database/client";
 import { seatGenerator } from "../lib/seat-generator";
 
-import type {
-  Flight,
-  FlightWithDetails,
-  UpdateFlightInput,
-} from "../types/flight-types";
-import { CreateFlightRequest } from "../validators/flight-validator";
+import type { Flight, UpdateFlightInput } from "../types/flight-types";
+import {
+  CreateFlightRequest,
+  SeatNumber,
+} from "../validators/flight-validator";
+import { splitSeatNumber } from "../lib/seatnum-extractor";
 
 export default class FlightService {
   public async createFlight(data: CreateFlightRequest): Promise<Flight> {
@@ -48,9 +48,7 @@ export default class FlightService {
     }
   }
 
-  public async getFlightById(
-    flightId: string,
-  ): Promise<FlightWithDetails | null> {
+  public async getFlightById(flightId: string) {
     try {
       const flight = await prisma.flight.findUnique({
         where: {
@@ -73,20 +71,21 @@ export default class FlightService {
       });
 
       if (!flight) {
-        return null;
+        throw new Error("No flight found");
       }
 
       // Calculate seat availability
-      const bookedSeats = flight.Seat.filter((seat) => seat.isBooked).length;
-      const availableSeats = flight.totalSeats - bookedSeats;
+      // const bookedSeats = flight.Seat.filter((seat) => seat.isBooked).length;
+      // const availableSeats = flight.totalSeats - bookedSeats;
 
-      return {
-        ...flight,
-        seatAvailability: {
-          availableSeats,
-          bookedSeats,
-        },
-      } as FlightWithDetails;
+      // return {
+      //   ...flight,
+      //   seatAvailability: {
+      //     availableSeats,
+      //     bookedSeats,
+      //   },
+      // } as FlightWithDetails;
+      return flight;
     } catch (error) {
       throw error;
     }
@@ -157,6 +156,49 @@ export default class FlightService {
       });
       return deletedFlight;
     } catch (error) {
+      throw error;
+    }
+  }
+  public async reserveSeat(
+    flightId: string,
+    seatNumbers: SeatNumber[],
+  ): Promise<{ success: boolean; reservedSeats: SeatNumber[] }> {
+    try {
+      // Start a transaction to update all seats
+      const result = await prisma.$transaction(async (tx) => {
+        const updatedSeats = [];
+
+        for (let seatNumber of seatNumbers) {
+          const { rowNumber, columnLetter } = splitSeatNumber(seatNumber);
+
+          // Update the seat to mark it as booked
+          const updatedSeat = await tx.seat.updateMany({
+            where: {
+              flightId: flightId,
+              row: rowNumber,
+              column: columnLetter,
+              isBooked: false, // Additional safety check
+            },
+            data: {
+              isBooked: true,
+            },
+          });
+
+          // If no seats were updated, something went wrong
+          if (updatedSeat.count === 0) {
+            throw new Error(`Failed to reserve seat ${seatNumber}`);
+          }
+          updatedSeats.push(seatNumber);
+        }
+        return updatedSeats;
+      });
+
+      return {
+        success: true,
+        reservedSeats: result,
+      };
+    } catch (error) {
+      // If anything goes wrong, throw the error
       throw error;
     }
   }

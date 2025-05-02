@@ -2,13 +2,15 @@ import { z } from "zod";
 
 // Define the schema for creating a flight
 export const createFlightSchema = z.object({
-  airplaneId: z.number().int().positive(
-    "Airplane ID must be a positive integer",
-  ),
+  airplaneId: z
+    .number()
+    .int()
+    .positive("Airplane ID must be a positive integer"),
   originId: z.number().int().positive("Origin ID must be a positive integer"),
-  destinationId: z.number().int().positive(
-    "Destination ID must be a positive integer",
-  ),
+  destinationId: z
+    .number()
+    .int()
+    .positive("Destination ID must be a positive integer"),
   arrivalTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Arrival time must be a valid date",
   }),
@@ -18,4 +20,12 @@ export const createFlightSchema = z.object({
   basePrice: z.number().positive("Price must be a positive number"),
 });
 
+export const seatNumberSchema = z
+  .string()
+  .regex(
+    /^[1-9][0-9]*[A-F]$/,
+    "Seat number must be in the format like '1A', '12C', '18D' (row number + column letter A-F)",
+  );
+
+export type SeatNumber = z.infer<typeof seatNumberSchema>;
 export type CreateFlightRequest = z.infer<typeof createFlightSchema>;

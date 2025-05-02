@@ -92,7 +92,7 @@ enum StatusType {
 
 model Contact {
   id        Int       @id @default(autoincrement())
-  email     String
+  email     String    @unique
   phone     String
   createdAt DateTime  @default(now())
   userId    String? // Reference to User ID from the auth-service (via API)

@@ -12,6 +12,7 @@
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@repo/database": "workspace:*",
     "@repo/ui": "workspace:*",
     "@types/express": "^5.0.1",
     "esbuild": "^0.25.3",

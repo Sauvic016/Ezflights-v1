@@ -106,3 +106,30 @@ export const destroy: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const reserveSeat: RequestHandler = async (req, res) => {
+  try {
+    const { flightId, seatNumbers } = req.body;
+    const isAvailable = await flightService.reserveSeat(
+      flightId,
+      seatNumbers,
+    );
+    res.status(200).json({
+      data: isAvailable,
+      success: true,
+    });
+  } catch (error: unknown) {
+    // Type guard for error handling
+    const errorMessage = error instanceof Error
+      ? error.message
+      : "An unknown error occurred";
+
+    res.status(500).json({
+      data: { available: false },
+      success: false,
+      err: {
+        message: errorMessage,
+      },
+    });
+  }
+};
