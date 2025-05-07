@@ -57,6 +57,29 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+  .slider {
+    @apply /* [&::-webkit-slider-runnable-track]:rounded-full  */
+    /* [&::-webkit-slider-runnable-track]:bg-black/25  */
+    [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:h-12
+    [&::-webkit-slider-thumb]:w-3
+    [&::-webkit-slider-thumb]:rounded-md
+    /* [&::-webkit-slider-thumb]:rounded-full */
+    [&::-webkit-slider-runnable-track]:bg-transparent
+    [&::-webkit-slider-runnable-track]:z-40
+    [&::-webkit-slider-runnable-track]:cursor-pointer
+    [&::-webkit-slider-thumb]:bg-sky-700/70
+    [&::-webkit-slider-thumb]:cursor-pointer;
+  }
+  .scrollbar-none {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    /* overflow-x: hidden; Hide horizontal scrollbar */
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
 }
 
 @layer base {

@@ -8,5 +8,6 @@ router.post("/create-flight", flightController.create);
 router.post("/reserve-seat", flightController.reserveSeat);
 router.get("/get-flight/:id", flightController.get);
 router.delete("/delete/:id", flightController.destroy);
+router.post("/reserve-seat", flightController.reserveSeat);
 
 export default router;

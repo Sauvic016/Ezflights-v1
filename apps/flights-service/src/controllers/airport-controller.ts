@@ -1,9 +1,6 @@
 import { RequestHandler } from "express";
 import AirportService from "../services/airport-service";
-import {
-  createAirportSchema,
-  createAirportsArraySchema,
-} from "../validators/airport-validator";
+import { createAirportsArraySchema, createAirportSchema } from "@repo/types";
 
 const airportService = new AirportService();
 
@@ -29,8 +26,9 @@ export const create: RequestHandler = async (req, res) => {
       err: {},
     });
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    const errorMessage = error instanceof Error
+      ? error.message
+      : "An unknown error occurred";
     const errorDetails = error instanceof Error ? error.stack : {};
 
     res.status(500).json({
@@ -67,8 +65,9 @@ export const createMany: RequestHandler = async (req, res) => {
       err: {},
     });
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    const errorMessage = error instanceof Error
+      ? error.message
+      : "An unknown error occurred";
     const errorDetails = error instanceof Error ? error.stack : {};
 
     res.status(500).json({

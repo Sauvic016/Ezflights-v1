@@ -8,3 +8,5 @@ export const createAirportSchema = z.object({
 });
 
 export const createAirportsArraySchema = z.array(createAirportSchema);
+
+export type createAirportRequest = z.infer<typeof createAirportSchema>;

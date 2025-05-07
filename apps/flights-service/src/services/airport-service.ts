@@ -1,8 +1,8 @@
-import { prisma } from "@repo/database/client";
-import type { Airport, CreateAirportInput } from "../types/airport-types";
+import { Airport, prisma } from "@repo/database/client";
+import { createAirportRequest } from "@repo/types";
 
 export default class AirportService {
-  public async createAirport(data: CreateAirportInput): Promise<Airport> {
+  public async createAirport(data: createAirportRequest): Promise<Airport> {
     try {
       const response = await prisma.airport.create({
         data,
@@ -12,7 +12,9 @@ export default class AirportService {
       throw error;
     }
   }
-  public async createAirports(data: CreateAirportInput[]): Promise<Airport[]> {
+  public async createAirports(
+    data: createAirportRequest[],
+  ): Promise<Airport[]> {
     try {
       const response = await prisma.airport.createManyAndReturn({
         data,

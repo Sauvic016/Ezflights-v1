@@ -1,10 +1,6 @@
 import { RequestHandler } from "express";
 import AirplaneService from "../services/airplane-service";
-
-import {
-  createAirplanesArraySchema,
-  createAirplaneSchema,
-} from "./../validators/airplane-validator";
+import { createAirplanesArraySchema, createAirplaneSchema } from "@repo/types";
 
 const airplaneService = new AirplaneService();
 

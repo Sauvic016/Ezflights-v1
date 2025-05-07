@@ -1,12 +1,8 @@
-import { prisma } from "@repo/database/client";
-import type {
-  Airplane,
-  CreateAirplane,
-  UpdateAirplaneInput,
-} from "../types/airplane-types";
+import { Airplane, prisma } from "@repo/database/client";
+import { airplaneRequest } from "@repo/types";
 
 export default class AirplaneService {
-  public async createAirplane(data: CreateAirplane): Promise<Airplane> {
+  public async createAirplane(data: airplaneRequest): Promise<Airplane> {
     try {
       const response = await prisma.airplane.create({
         data,
@@ -16,7 +12,9 @@ export default class AirplaneService {
       throw error;
     }
   }
-  public async createAirplanes(data: CreateAirplane[]): Promise<Airplane[]> {
+  public async createAirplanes(
+    data: airplaneRequest[],
+  ): Promise<Airplane[]> {
     try {
       const response = await prisma.airplane.createManyAndReturn({
         data,
@@ -48,7 +46,7 @@ export default class AirplaneService {
   }
   public async updateAirplane(
     airplaneId: number,
-    data: UpdateAirplaneInput,
+    data: airplaneRequest,
   ): Promise<Airplane> {
     try {
       const response = await prisma.airplane.update({

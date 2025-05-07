@@ -10,3 +10,5 @@ export const createAirplaneSchema = z.object({
 });
 
 export const createAirplanesArraySchema = z.array(createAirplaneSchema);
+
+export type airplaneRequest = z.infer<typeof createAirplaneSchema>;

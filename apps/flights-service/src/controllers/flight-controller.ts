@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import FlightService from "../services/flight-service";
-import { createFlightSchema } from "../validators/flight-validator";
+import { createFlightSchema } from "@repo/types";
 
 const flightService = new FlightService();
 // Export as a RequestHandler to ensure compatibility with Express
@@ -51,7 +51,8 @@ export const create: RequestHandler = async (req, res) => {
 
 export const get: RequestHandler = async (req, res) => {
   try {
-    const id: string = req.params.id;
+    // const id: string = req.params.id;
+    const id = "EZ00001";
     const flight = await flightService.getFlightById(id);
     res.status(200).json({
       data: flight,
@@ -69,7 +70,7 @@ export const get: RequestHandler = async (req, res) => {
     res.status(500).json({
       data: {},
       success: false,
-      message: "Failed to create flight",
+      message: "Failed to fetch flight",
       err: {
         message: errorMessage,
         details: errorDetails,
@@ -109,7 +110,8 @@ export const destroy: RequestHandler = async (req, res) => {
 
 export const reserveSeat: RequestHandler = async (req, res) => {
   try {
-    const { flightId, seatNumbers } = req.body;
+    let { flightId, seatNumbers } = req.body;
+    flightId = "EZ00001";
     const isAvailable = await flightService.reserveSeat(
       flightId,
       seatNumbers,

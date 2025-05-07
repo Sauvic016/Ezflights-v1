@@ -1,4 +1,5 @@
 import { createSeatInput } from "../types/seat-types";
+import { SeatClass } from "@repo/database/client";
 
 export const seatGenerator = (totalSeat: number, flightId: string) => {
   const columns = ["A", "B", "C", "D", "E", "F"];
@@ -12,17 +13,17 @@ export const seatGenerator = (totalSeat: number, flightId: string) => {
   // Remaining rows will be economy class
 
   for (let row = 1; row <= totalRows; row++) {
-    let seatClass: "FIRST_CLASS" | "BUSINESS" | "PREMIUM_ECONOMY" | "ECONOMY";
+    let seatClass: SeatClass;
 
     // Determine seat class based on row number
     if (row <= firstClassRows) {
-      seatClass = "FIRST_CLASS";
+      seatClass = SeatClass.FIRST_CLASS;
     } else if (row <= firstClassRows + businessClassRows) {
-      seatClass = "BUSINESS";
+      seatClass = SeatClass.BUSINESS;
     } else if (row <= firstClassRows + businessClassRows + premiumEconomyRows) {
-      seatClass = "PREMIUM_ECONOMY";
+      seatClass = SeatClass.PREMIUM_ECONOMY;
     } else {
-      seatClass = "ECONOMY";
+      seatClass = SeatClass.ECONOMY;
     }
 
     for (const column of columns) {

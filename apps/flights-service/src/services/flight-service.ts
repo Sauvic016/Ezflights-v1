@@ -1,15 +1,9 @@
-import { prisma } from "@repo/database/client";
-import { seatGenerator } from "../lib/seat-generator";
-
-import type { Flight, UpdateFlightInput } from "../types/flight-types";
-import {
-  CreateFlightRequest,
-  SeatNumber,
-} from "../validators/flight-validator";
-import { splitSeatNumber } from "../lib/seatnum-extractor";
+import { Flight, prisma } from "@repo/database/client";
+import { seatGenerator, splitSeatNumber } from "../lib";
+import { FlightRequest, SeatNumber } from "@repo/types";
 
 export default class FlightService {
-  public async createFlight(data: CreateFlightRequest): Promise<Flight> {
+  public async createFlight(data: FlightRequest): Promise<Flight> {
     try {
       // Start a transaction to create flight and its seats
       const result = await prisma.$transaction(async (tx) => {
@@ -54,16 +48,40 @@ export default class FlightService {
         where: {
           id: flightId,
         },
-        include: {
-          Seat: true,
+        select: {
+          id: true,
+          departureTime: true,
+          arrivalTime: true,
+          totalSeats: true,
+          basePrice: true,
+          Seat: {
+            orderBy: [
+              { row: "asc" },
+              { column: "asc" },
+            ],
+          },
           origin: {
-            include: {
-              city: true,
+            select: {
+              id: true,
+              name: true,
+              city: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
           destination: {
-            include: {
-              city: true,
+            select: {
+              id: true,
+              name: true,
+              city: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
           airplane: true,
@@ -116,7 +134,7 @@ export default class FlightService {
 
   public async updateFlight(
     flightId: string,
-    data: UpdateFlightInput,
+    data: FlightRequest,
   ): Promise<Flight> {
     try {
       const response = await prisma.flight.update({
@@ -171,6 +189,7 @@ export default class FlightService {
         for (let seatNumber of seatNumbers) {
           const { rowNumber, columnLetter } = splitSeatNumber(seatNumber);
 
+          console.log(rowNumber, columnLetter);
           // Update the seat to mark it as booked
           const updatedSeat = await tx.seat.updateMany({
             where: {

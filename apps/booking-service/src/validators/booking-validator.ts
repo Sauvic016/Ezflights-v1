@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PaymentMethod } from "@repo/database/client";
+import { GenderRole, PaymentMethod } from "@repo/database/client";
 
 const phoneRegex = new RegExp(
   /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/,
@@ -16,6 +16,9 @@ export const travelerSchema = z.object({
   firstName: z.string().min(2, "firstname should be atleast 2 characters long"),
   lastName: z.string().min(2, "lastName should be atleast 2 characters long"),
   dob: z.string().datetime(),
+  gender: z.nativeEnum(GenderRole, {
+    errorMap: () => ({ message: "Invalid Gender" }),
+  }),
   seatNumber: seatNumberSchema.optional(),
 });
 

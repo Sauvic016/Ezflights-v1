@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { type SeatNumber, seatNumberSchema } from "./seatSchema";
 
 // Define the schema for creating a flight
 export const createFlightSchema = z.object({
@@ -20,12 +21,5 @@ export const createFlightSchema = z.object({
   basePrice: z.number().positive("Price must be a positive number"),
 });
 
-export const seatNumberSchema = z
-  .string()
-  .regex(
-    /^[1-9][0-9]*[A-F]$/,
-    "Seat number must be in the format like '1A', '12C', '18D' (row number + column letter A-F)",
-  );
-
-export type SeatNumber = z.infer<typeof seatNumberSchema>;
-export type CreateFlightRequest = z.infer<typeof createFlightSchema>;
+export { type SeatNumber, seatNumberSchema };
+export type FlightRequest = z.infer<typeof createFlightSchema>;

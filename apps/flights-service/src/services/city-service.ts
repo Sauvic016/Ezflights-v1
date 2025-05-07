@@ -1,13 +1,8 @@
-import { prisma } from "@repo/database/client";
-
-import type {
-  CreateCityInput,
-  City,
-  UpdateCityInput,
-} from "../types/city-types";
+import { City, prisma } from "@repo/database/client";
+import { cityRequest } from "@repo/types";
 
 export default class CityService {
-  public async createCity(data: CreateCityInput): Promise<City> {
+  public async createCity(data: cityRequest): Promise<City> {
     try {
       const response = await prisma.city.create({
         data,
@@ -30,6 +25,21 @@ export default class CityService {
       throw error;
     }
   }
+  public async getCityByName(cityName: string) {
+    try {
+      const cities = await prisma.city.findMany({
+        where: {
+          name: {
+            contains: cityName,
+            mode: "insensitive",
+          },
+        },
+      });
+      return cities;
+    } catch (error) {
+      throw error;
+    }
+  }
   public async getAllCities(): Promise<City[]> {
     try {
       const cities = await prisma.city.findMany();
@@ -41,7 +51,7 @@ export default class CityService {
 
   public async updateCity(
     cityId: number,
-    data: UpdateCityInput,
+    data: cityRequest,
   ): Promise<City> {
     try {
       const city = await prisma.city.update({
