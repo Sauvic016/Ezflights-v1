@@ -12,7 +12,7 @@ export default function Header() {
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-blue-600">
             <PlaneTakeoffIcon className="h-4 w-4 text-white" />
           </div>
-          <span className="text-xl font-bold">EzFlights</span>
+          <span className="text-xl font-bold mr-2 md:mr-0">EzFlights</span>
         </div>
         <nav className="hidden md:flex gap-8">
           <Link

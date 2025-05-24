@@ -19,41 +19,34 @@ import React, { Suspense } from "react";
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-white ">
-      <main className="flex-1 pt-16 mx-10">
+      <main className="flex-1 pt-16 mx-4 md:mx-10">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-white p-16 ">
+        <section className="relative overflow-hidden bg-white pt-16 md:p-16 ">
           {/* Background elements */}
-          <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-white to-blue-50 -z-10">
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-white to-blue-50 -z-10"></div>
 
           {/* Decorative patterns */}
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-20 right-[10%] w-72 h-72 rounded-full bg-gradient-to-br from-sky-100 to-blue-100 blur-3xl opacity-70 -z-10">
-            </div>
-            <div className="absolute bottom-10 left-[20%] w-96 h-96 rounded-full bg-gradient-to-tr from-purple-100 to-pink-100 blur-3xl opacity-70 -z-10">
-            </div>
-            <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-yellow-50 blur-3xl opacity-40 -z-10">
-            </div>
-          </div>
+          {/* <div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute top-20 right-[10%] w-72 h-72 rounded-full bg-gradient-to-br from-sky-100 to-blue-100 blur-3xl opacity-70 -z-10"></div>
+            <div className="absolute bottom-10 left-[20%] w-96 h-96 rounded-full bg-gradient-to-tr from-purple-100 to-pink-100 blur-3xl opacity-70 -z-10"></div>
+            <div className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-yellow-50 blur-3xl opacity-40 -z-10"></div>
+          </div> */}
 
           {/* Decorative grid pattern */}
-          <div className="absolute inset-0 bg-[url('/placeholder.svg?height=100&width=100')] bg-repeat opacity-[0.02] -z-10">
-          </div>
+          {/* <div className="absolute inset-0 bg-[url('/placeholder.svg?height=100&width=100')] bg-repeat opacity-[0.02] -z-10"></div> */}
 
-          <div className="container px-4 md:px-6 relative">
+          <div className="container px-0 md:px-6 relative">
             {/* Main hero content */}
             <div className="text-center max-w-3xl mx-auto ">
               <div className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm text-sky-600 mb-6">
-                <span className="flex h-2 w-2 rounded-full bg-sky-500 mr-2">
-                </span>
+                <span className="flex h-2 w-2 rounded-full bg-sky-500 mr-2"></span>
                 Explore the world with confidence
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
                 Your journey begins with
                 <span className="relative mx-2">
                   <span className="relative z-10 text-sky-600">EzFlights</span>
-                  <span className="absolute bottom-2 left-0 w-full h-3 bg-sky-100 -z-10">
-                  </span>
+                  <span className="absolute bottom-2 left-0 w-full h-3 bg-sky-100 -z-10"></span>
                 </span>
               </h1>
               <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
@@ -70,7 +63,7 @@ export default function Home() {
             {/* <FlightSearchComponent /> */}
 
             {/* Floating trust badges */}
-            <div className="flex flex-wrap justify-center gap-4 md:gap-8 mt-8 md:mt-12">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-8 my-8 md:mt-12">
               {[
                 {
                   icon: <ShieldCheckIcon className="h-5 w-5 text-sky-500" />,
@@ -143,8 +136,7 @@ export default function Home() {
             <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
               <div>
                 <div className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm text-sky-600 mb-4">
-                  <span className="flex h-2 w-2 rounded-full bg-sky-500 mr-2">
-                  </span>
+                  <span className="flex h-2 w-2 rounded-full bg-sky-500 mr-2"></span>
                   Popular Destinations
                 </div>
                 <h2 className="text-5xl font-bold">Explore Top Destinations</h2>
@@ -196,8 +188,7 @@ export default function Home() {
                       fill
                       className="object-cover rounded-md h-full"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     <div className="absolute top-4 right-4 bg-white rounded-full px-3 py-1 text-sm font-medium shadow-md">
                       From {destination.price}
                     </div>
@@ -241,8 +232,7 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="text-center mb-16">
               <div className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm text-sky-600 mb-4">
-                <span className="flex h-2 w-2 rounded-full bg-sky-500 mr-2">
-                </span>
+                <span className="flex h-2 w-2 rounded-full bg-sky-500 mr-2"></span>
                 Why Choose EzFlights
               </div>
               <h2 className="text-5xl font-bold">Travel with peace of mind</h2>
