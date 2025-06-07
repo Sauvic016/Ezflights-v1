@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  CornerUpLeft,
   Plane,
   // Luggage,
 } from "lucide-react";
@@ -38,6 +39,7 @@ import { FlightData } from "@repo/types";
 import { useFlightStore } from "@/store/Store";
 // import FlightSearchComponent from "@/components/FlightSearch";
 import FlightSearch from "@/components/Flights/flight-search";
+import FlightCards from "@/components/Flights/FlightCards";
 // import { AnimatedModalDemo } from "@/components/BookingModal/BookingModal";
 // import Link from "next/link";
 
@@ -59,9 +61,8 @@ export default function FlightList({
 }: {
   flightsData: FlightApiResponse;
 }) {
-  const [sortBy, setSortBy] = useState<keyof (typeof flightsData.Items)[0]>(
-    "basePrice",
-  );
+  const [sortBy, setSortBy] =
+    useState<keyof (typeof flightsData.Items)[0]>("basePrice");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   // const [filterAirline, setFilterAirline] = useState("");
   // const [currentPage, setCurrentPage] = useState(1);
@@ -97,14 +98,14 @@ export default function FlightList({
   //   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <main className="container mx-auto px-4 py-8 md:py-16">
-      <motion.div>
-        <motion.h1 className="text-3xl font-bold  mb-2  text-sky-800">
-          Search Flights
-        </motion.h1>
-        <FlightSearch />
-      </motion.div>
-
+    <main className="container mx-auto px-4 py-8 ">
+      <span
+        onClick={() => router.replace("/")}
+        className="shadow-md rounded p-2 flex w-fit font-semibold cursor-pointer gap-2"
+      >
+        <CornerUpLeft />
+        Go Back
+      </span>
       <div className="my-6 flex flex-wrap justify-between gap-4 items-center">
         <motion.h1 className="text-2xl font-bold mt- ml-2 flex  text-sky-800 ">
           Available Flights
@@ -114,8 +115,7 @@ export default function FlightList({
             <Label htmlFor="sortBy" className="text-sky-700">
               Sort by
             </Label>
-            {
-              /* <Select value={sortBy} onValueChange={setSortBy}>
+            {/* <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="bg-white/50 border-sky-200">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -125,12 +125,12 @@ export default function FlightList({
                 <SelectItem value="arrivalTime">Arrival Time</SelectItem>
                 <SelectItem value="duration">Duration</SelectItem>
               </SelectContent>
-            </Select> */
-            }
+            </Select> */}
             <Select
               value={sortBy}
               onValueChange={(value) =>
-                setSortBy(value as keyof (typeof flightsData.Items)[0])}
+                setSortBy(value as keyof (typeof flightsData.Items)[0])
+              }
             >
               <SelectTrigger className="bg-white/50 border-sky-200">
                 <SelectValue placeholder="Sort by" />
@@ -196,8 +196,7 @@ export default function FlightList({
             <div>
               <p className="text-sm">
                 <Clock className="inline mr-1 h-4 w-4" />{" "}
-                {format(new Date(recommendedFlight!.departureTime), "hh:mm a")}
-                {" "}
+                {format(new Date(recommendedFlight!.departureTime), "hh:mm a")}{" "}
                 - {format(new Date(recommendedFlight!.arrivalTime), "hh:mm a")}
               </p>
             </div>
@@ -213,96 +212,39 @@ export default function FlightList({
 
         <motion.div variants={fadeInUp} className="space-y-4">
           {flightsData.Items.map((flight) => (
-            <motion.div key={flight.id} variants={fadeInUp} className="group">
-              <Card className="border-2 border-white/20 bg-white/40 backdrop-blur-md shadow-xl transition-all duration-300 hover:bg-white/50">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-6 ">
-                    <div className="space-y-1 ">
-                      <div className="text-sm text-muted-foreground">
-                        {"Ezfly"}
-                      </div>
-                      <div className="font-semibold">
-                        {flight.id.replace("EZ", "EZ-")}
-                      </div>
-                    </div>
-
-                    <div className="flex justify-center items-center col-span-2   space-x-4 ">
-                      <div>
-                        <div className="text-2xl font-bold">
-                          {format(new Date(flight.departureTime), "hh:mm a")}
-                        </div>
-                        <div className="text-sm text-muted-foreground text-center">
-                          {flight.origin.city.name}
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="text-sm text-muted-foreground ">
-                          {getDuration(
-                            flight.departureTime,
-                            flight.arrivalTime,
-                          )}
-                        </div>
-                        <div className="relative w-44 h-px bg-primary/50">
-                          <div className="absolute -top-1 right-0 w-2 h-2 rounded-full bg-primary" />
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {/* {flight.stops === 0 ? "Non stop" : `${flight.stops} stop`} */}
-                          Non stop
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold">
-                          {format(new Date(flight.arrivalTime), "hh:mm a")}
-                        </div>
-                        <div className="text-sm text-muted-foreground text-center">
-                          {flight.destination.city.name}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-center items-center  ">
-                      <div>
-                        <div className="text-2xl font-bold">
-                          ₹{flight.basePrice}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          per person
-                        </div>
-                      </div>
-                    </div>
-                    <div className=" justify-self-end">
-                      <Button
-                        onClick={() =>
-                          handleClick(flight)}
-                        className="group bg-primary/80 backdrop-blur-sm hover:bg-primary/90"
-                      >
-                        Book Now
-                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <FlightCards
+              key={flight.id}
+              flights={[flight]}
+              handleClick={handleClick}
+            />
           ))}
         </motion.div>
       </div>
 
       <div className="flex justify-between items-center mt-6">
         <Button // onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-         // disabled={currentPage === 1}
-        className="bg-sky-600 hover:bg-sky-700 text-white">
+          // disabled={currentPage === 1}
+          className="bg-sky-600 hover:bg-sky-700 text-white"
+        >
           <ChevronLeft className="mr-2 h-4 w-4" /> Previous
         </Button>
         <span className="text-sky-800">
           Page {1} of {flightsData.totalPages}
         </span>
         <Button // onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-         // disabled={currentPage === totalPages}
-        className="bg-sky-600 hover:bg-sky-700 text-white">
+          // disabled={currentPage === totalPages}
+          className="bg-sky-600 hover:bg-sky-700 text-white"
+        >
           Next <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
+
+      <motion.div className="mt-12">
+        <motion.h1 className="text-3xl font-bold  mb-2  text-sky-800">
+          Search Flights
+        </motion.h1>
+        <FlightSearch />
+      </motion.div>
       {/* <AnimatedModalDemo/> */}
     </main>
   );

@@ -35,27 +35,30 @@ import { flightSearchSchema } from "@/schemas/FlightSearchSchema";
 
 import { useFlightSearch } from "@/hooks/use-flightSearch";
 import { useFlightSearchParams } from "@/hooks/use-flightSearchParams";
+import { useTravellerStore } from "@/store/booking-store";
 // import useDebounce from "@/hooks/use-debounce";
 
 type FlightSearchValues = z.infer<typeof flightSearchSchema>;
 
-const SEARCH_URL =
-  `${process.env.NEXT_PUBLIC_flight_service}/api/city/get-city`;
+const SEARCH_URL = `${process.env.NEXT_PUBLIC_flight_service}/api/city/get-city`;
 
 const FlightSearch = () => {
   const [trip, setTrip] = useState<"oneWay" | "roundTrip">("oneWay");
   const [activeField, setActiveField] = useState<"from" | "to" | null>(null);
   const { getSearchParams, updateSearchParams } = useFlightSearchParams();
 
-  const [selectedCities, setSelectedCities] = useState<
-    { from: string; to: string }
-  >({ from: "", to: "" });
+  const [selectedCities, setSelectedCities] = useState<{
+    from: string;
+    to: string;
+  }>({ from: "", to: "" });
 
   // const [openDeparture, setOpenDeparture] = useState<boolean>(false);
   // const [openArrival, setOpenArrival] = useState<boolean>(false);
 
   // const router = useRouter();
   // const searchParams = useSearchParams();
+
+  const { setTravellersCount } = useTravellerStore();
 
   const form = useForm<FlightSearchValues>({
     resolver: zodResolver(flightSearchSchema),
@@ -100,13 +103,20 @@ const FlightSearch = () => {
     form.setValue(source, value);
   };
 
+  const handlePassengerCountChange = (travellercount: {
+    adults: number;
+    children: number;
+  }) => {
+    const total = Object.values(travellercount).reduce((sum, v) => sum + v, 0);
+
+    setTravellersCount(Number(total));
+  };
+
   return (
     <div className="relative  max-w-5xl mx-auto">
       {/* Decorative elements */}
-      <div className="absolute -top-6 -left-6 w-24 h-24 bg-sky-100 rounded-full -z-10 hidden md:block">
-      </div>
-      <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-100 rounded-full -z-10 hidden md:block">
-      </div>
+      <div className="absolute -top-6 -left-6 w-24 h-24 bg-sky-100 rounded-full -z-10 hidden md:block"></div>
+      <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-100 rounded-full -z-10 hidden md:block"></div>
       <div className="border-white/20 bg-white/40 backdrop-blur-md  rounded-lg p-8 shadow-xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -129,7 +139,8 @@ const FlightSearch = () => {
                         if (value === "oneWay") {
                           form.setValue("returnDate", null);
                         } else if (
-                          value === "roundTrip" && !form.getValues("returnDate")
+                          value === "roundTrip" &&
+                          !form.getValues("returnDate")
                         ) {
                           // Set a default return date (7 days after departure) when switching to roundTrip
                           const departureDate = form.getValues("departureDate");
@@ -172,12 +183,15 @@ const FlightSearch = () => {
                                     <AutoComplete
                                       value={field.value}
                                       onValueChange={(value) =>
-                                        handleInputChange(value, "from")}
+                                        handleInputChange(value, "from")
+                                      }
                                       onSelect={(value, id) =>
-                                        handleCitySelect(value, id, "from")}
+                                        handleCitySelect(value, id, "from")
+                                      }
                                       suggestions={fromData || []}
-                                      isLoading={isFromLoading &&
-                                        activeField === "from"}
+                                      isLoading={
+                                        isFromLoading && activeField === "from"
+                                      }
                                       placeholder="Departure City"
                                     />
                                   </div>
@@ -186,8 +200,7 @@ const FlightSearch = () => {
                               </FormItem>
                             )}
                           />
-                          {
-                            /* <div className="space-y-2">
+                          {/* <div className="space-y-2">
                               <label
                                 htmlFor="to"
                                 className="text-sm font-medium text-gray-700"
@@ -202,8 +215,7 @@ const FlightSearch = () => {
                                   className="pl-9 rounded-lg border-gray-200"
                                 />
                               </div>
-                            </div> */
-                          }
+                            </div> */}
                           <FormField
                             control={form.control}
                             name="to"
@@ -217,12 +229,15 @@ const FlightSearch = () => {
                                     <AutoComplete
                                       value={field.value}
                                       onValueChange={(value) =>
-                                        handleInputChange(value, "to")}
+                                        handleInputChange(value, "to")
+                                      }
                                       onSelect={(value, id) =>
-                                        handleCitySelect(value, id, "to")}
+                                        handleCitySelect(value, id, "to")
+                                      }
                                       suggestions={toData || []}
-                                      isLoading={isToLoading &&
-                                        activeField === "to"}
+                                      isLoading={
+                                        isToLoading && activeField === "to"
+                                      }
                                       placeholder="Arrival City"
                                     />
                                   </div>
@@ -242,32 +257,30 @@ const FlightSearch = () => {
                                   {trip === "oneWay" ? "Date" : "Dates"}
                                 </FormLabel>
                                 <FormControl>
-                                  {trip === "oneWay"
-                                    ? (
-                                      <DatePicker
-                                        date={field.value}
-                                        onSelect={field.onChange}
-                                        className="w-full"
-                                      />
-                                    )
-                                    : (
-                                      <DatePickerWithRange
-                                        date={field.value}
-                                        onSelect={(range) => {
-                                          if (range?.from) {
-                                            field.onChange(range.from);
-                                            form.setValue(
-                                              "returnDate",
-                                              range.to || null,
-                                            );
-                                          } else {
-                                            field.onChange(null);
-                                            form.setValue("returnDate", null);
-                                          }
-                                        }}
-                                        className="w-full"
-                                      />
-                                    )}
+                                  {trip === "oneWay" ? (
+                                    <DatePicker
+                                      date={field.value}
+                                      onSelect={field.onChange}
+                                      className="w-full"
+                                    />
+                                  ) : (
+                                    <DatePickerWithRange
+                                      date={field.value}
+                                      onSelect={(range) => {
+                                        if (range?.from) {
+                                          field.onChange(range.from);
+                                          form.setValue(
+                                            "returnDate",
+                                            range.to || null,
+                                          );
+                                        } else {
+                                          field.onChange(null);
+                                          form.setValue("returnDate", null);
+                                        }
+                                      }}
+                                      className="w-full"
+                                    />
+                                  )}
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -286,22 +299,23 @@ const FlightSearch = () => {
                                   onValueChange={(value) => {
                                     const parsed = JSON.parse(value);
                                     field.onChange(parsed);
+                                    handlePassengerCountChange(parsed);
                                   }}
                                 >
                                   <SelectTrigger className="rounded-lg border-gray-200">
                                     <SelectValue placeholder="Select passengers">
                                       {field.value
                                         ? `${field.value.adults} Adult${
-                                          field.value.adults > 1 ? "s" : ""
-                                        }${
-                                          field.value.children > 0
-                                            ? `, ${field.value.children} Child${
-                                              field.value.children > 1
-                                                ? "ren"
-                                                : ""
-                                            }`
-                                            : ""
-                                        }`
+                                            field.value.adults > 1 ? "s" : ""
+                                          }${
+                                            field.value.children > 0
+                                              ? `, ${field.value.children} Child${
+                                                  field.value.children > 1
+                                                    ? "ren"
+                                                    : ""
+                                                }`
+                                              : ""
+                                          }`
                                         : "Select passengers"}
                                     </SelectValue>
                                   </SelectTrigger>

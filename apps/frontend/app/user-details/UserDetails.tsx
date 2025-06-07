@@ -46,6 +46,7 @@ import { GenderRole, useFlightStore, useUserDetails } from "@/store/Store";
 import { FlightData } from "@repo/types";
 import { useState } from "react";
 import { DatePicker } from "@/components/date-picker";
+import { useTravellerStore } from "@/store/booking-store";
 
 type FormData = z.infer<typeof bookingFormSchema>;
 
@@ -69,12 +70,14 @@ export default function UserDetailPage() {
   const form = useForm<FormData>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
-      travelers: [{
-        firstName: "",
-        lastName: "",
-        gender: "MALE" as const,
-        dob: "",
-      }],
+      travelers: [
+        {
+          firstName: "",
+          lastName: "",
+          gender: "MALE" as const,
+          dob: "",
+        },
+      ],
       countryCode: "",
       bookingCountryCode: "+91",
       bookingMobileNo: "",
@@ -90,7 +93,7 @@ export default function UserDetailPage() {
   const flight = useFlightStore((state) => state.flight as FlightData);
 
   const addTravelerField = () => {
-    if (travelerCount >= 4) return; // Prevent adding more than 4 travelers
+    if (travelerCount >= travelers) return; // Prevent adding more than 4 travelers
     setTravelerCount((prev) => prev + 1);
     const currentTravelers = form.getValues("travelers") || [];
     form.setValue("travelers", [
@@ -133,6 +136,8 @@ export default function UserDetailPage() {
     router.push(`/select-seat/${flight.id}`);
   }
 
+  const { travelers } = useTravellerStore();
+
   return (
     // <div className="min-h-screen bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20">
     <div className="container mx-auto p-4 pt-32 max-w-4xl">
@@ -156,35 +161,39 @@ export default function UserDetailPage() {
         <motion.div variants={fadeInUp}>
           <Card className="border-2 border-white/20 bg-white/40 shadow-xl">
             <CardHeader className="bg-white/30 border-b border-white/20">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center space-x-2">
                   <CircleUser className="text-primary" />
-                  <CardTitle className="text-xl">Traveler's Details</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl">
+                    Traveler's Details
+                  </CardTitle>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 w-full sm:w-auto">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={addTravelerField}
-                    className={`bg-white/50 hover:bg-white/60 ${
-                      travelerCount >= 4 ? "opacity-50 cursor-not-allowed" : ""
+                    className={`bg-white/50 hover:bg-white/60 w-full sm:w-auto text-xs sm:text-sm ${
+                      travelerCount >= travelers
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
                     }`}
-                    disabled={travelerCount >= 4}
+                    disabled={travelerCount >= travelers}
                   >
                     <Plus className="h-4 w-4 mr-1" />
-                    Add Traveler {travelerCount}/4
+                    Add Traveler {travelerCount}/{travelers}
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <CardContent className="py-6">
-                  <div className="space-y-8 pl-4">
+                <CardContent className="py-4 sm:py-6">
+                  <div className="space-y-6 sm:space-y-8 pl-2 sm:pl-4">
                     {Array.from({ length: travelerCount }).map((_, index) => (
                       <div key={index} className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+                          <h3 className="text-base sm:text-lg font-semibold">
                             Traveler {index + 1}
                           </h3>
                           {index > 0 && (
@@ -192,20 +201,20 @@ export default function UserDetailPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => removeTravelerField(index)}
-                              className="text-red-500 hover:text-red-600"
+                              className="text-red-500 hover:text-red-600 text-xs sm:text-sm"
                             >
                               <Minus className="h-4 w-4 mr-1" />
                               Remove
                             </Button>
                           )}
                         </div>
-                        <div className="flex gap-4">
+                        <div className="flex flex-col sm:flex-row gap-4">
                           <FormField
                             control={form.control}
                             name={`travelers.${index}.firstName`}
                             render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="font-semibold">
+                              <FormItem className="flex-1">
+                                <FormLabel className="font-semibold text-sm">
                                   First Name
                                 </FormLabel>
                                 <FormControl>
@@ -223,8 +232,8 @@ export default function UserDetailPage() {
                             control={form.control}
                             name={`travelers.${index}.lastName`}
                             render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="font-semibold">
+                              <FormItem className="flex-1">
+                                <FormLabel className="font-semibold text-sm">
                                   Last Name
                                 </FormLabel>
                                 <FormControl>
@@ -244,20 +253,20 @@ export default function UserDetailPage() {
                           name={`travelers.${index}.gender`}
                           render={({ field }) => (
                             <FormItem className="space-y-3">
-                              <FormLabel className="font-semibold">
+                              <FormLabel className="font-semibold text-sm">
                                 Gender
                               </FormLabel>
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
                                   defaultValue={field.value}
-                                  className="flex items-center text-center space-x-1"
+                                  className="flex flex-col sm:flex-row items-start sm:items-center text-center space-y-2 sm:space-y-0 sm:space-x-1"
                                 >
                                   <FormItem className="flex items-center space-x-3 space-y-0">
                                     <FormControl>
                                       <RadioGroupItem value="MALE" />
                                     </FormControl>
-                                    <FormLabel className="font-normal">
+                                    <FormLabel className="font-normal text-sm">
                                       Male
                                     </FormLabel>
                                   </FormItem>
@@ -265,7 +274,7 @@ export default function UserDetailPage() {
                                     <FormControl>
                                       <RadioGroupItem value="FEMALE" />
                                     </FormControl>
-                                    <FormLabel className="font-normal">
+                                    <FormLabel className="font-normal text-sm">
                                       Female
                                     </FormLabel>
                                   </FormItem>
@@ -273,7 +282,7 @@ export default function UserDetailPage() {
                                     <FormControl>
                                       <RadioGroupItem value="OTHER" />
                                     </FormControl>
-                                    <FormLabel className="font-normal">
+                                    <FormLabel className="font-normal text-sm">
                                       Other
                                     </FormLabel>
                                   </FormItem>
@@ -288,14 +297,16 @@ export default function UserDetailPage() {
                           name={`travelers.${index}.dob`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="font-semibold">
+                              <FormLabel className="font-semibold text-sm">
                                 Date of Birth
                               </FormLabel>
                               <FormControl>
                                 <DatePicker
-                                  date={field.value
-                                    ? new Date(field.value)
-                                    : undefined}
+                                  date={
+                                    field.value
+                                      ? new Date(field.value)
+                                      : undefined
+                                  }
                                   onSelect={(date) => {
                                     field.onChange(
                                       date ? date.toISOString() : "",
@@ -314,33 +325,32 @@ export default function UserDetailPage() {
                   </div>
                 </CardContent>
 
-                <CardContent>
-                  <div className="flex items-center space-x-1">
-                    <Contact className="h-5 w-5 text-primary" />
-                    <CardTitle className="my-6">
+                <CardContent className="pt-0">
+                  <div className="flex items-center space-x-1 mb-4 sm:mb-6">
+                    <Contact className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                    <CardTitle className="text-sm ">
                       Booking details will be sent to
                     </CardTitle>
                   </div>
 
-                  <div className="space-y-4 pl-4">
-                    <div className="flex gap-8">
-                      <div className="space-y-2">
+                  <div className="space-y-4 pl-2 sm:pl-4">
+                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+                      <div className="space-y-2 flex-1">
                         <div className="text-sm font-semibold">
                           Mobile Number{" "}
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <FormField
                             control={form.control}
                             name="bookingCountryCode"
                             render={({ field }) => (
-                              <FormItem>
-                                {/* <FormLabel>Country Code</FormLabel> */}
+                              <FormItem className="w-full sm:w-auto">
                                 <Select
                                   onValueChange={field.onChange}
                                   defaultValue={field.value}
                                 >
-                                  <FormControl className=" focus-visible:ring-indigo-400">
-                                    <SelectTrigger>
+                                  <FormControl className="focus-visible:ring-indigo-400">
+                                    <SelectTrigger className="w-full sm:w-[120px]">
                                       <SelectValue placeholder="+91" />
                                     </SelectTrigger>
                                   </FormControl>
@@ -362,11 +372,10 @@ export default function UserDetailPage() {
                             control={form.control}
                             name="bookingMobileNo"
                             render={({ field }) => (
-                              <FormItem>
-                                {/* <FormLabel>Mobile Number</FormLabel> */}
+                              <FormItem className="flex-1">
                                 <FormControl>
                                   <Input
-                                    className=" focus-visible:ring-indigo-400"
+                                    className="focus-visible:ring-indigo-400"
                                     type="tel"
                                     placeholder="1234567890 (Optional)"
                                     {...field}
@@ -378,19 +387,18 @@ export default function UserDetailPage() {
                           />
                         </div>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-2 flex-1">
                         <div className="text-sm font-semibold">Email</div>
                         <FormField
                           control={form.control}
                           name="bookingEmail"
                           render={({ field }) => (
                             <FormItem>
-                              {/* <FormLabel>Email</FormLabel> */}
                               <FormControl>
                                 <Input
-                                  className=" focus-visible:ring-indigo-400"
+                                  className="focus-visible:ring-indigo-400"
                                   type="email"
-                                  placeholder="john@mail.com (Optional)"
+                                  placeholder="john@mail.com "
                                   {...field}
                                 />
                               </FormControl>
