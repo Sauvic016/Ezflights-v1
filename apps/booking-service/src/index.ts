@@ -1,11 +1,9 @@
 import express from "express";
-import dotenv from "dotenv";
+
 import bookingRouter from "./routes/booking-route";
 import cors from "cors";
+import { PORT } from "./config/booking-config";
 
-dotenv.config();
-
-const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());

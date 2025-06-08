@@ -14,7 +14,7 @@ export const dummyFlights = (
   Items: [
     {
       id: "EZ00001",
-      departureTime: `${departureDate}T12:30:00.000Z`,
+      departureTime: `${departureDate}T00:30:00.000Z`,
       arrivalTime: `${departureDate}T03:30:00.000Z`,
       totalSeats: 180,
       basePrice: 6250,

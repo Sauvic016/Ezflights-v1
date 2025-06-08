@@ -1,6 +1,7 @@
 import { prisma } from "@repo/database/client";
 import { CreateBookingType } from "../validators/booking-validator";
 import axios from "axios";
+import { publishMessage } from "../utils/message-queue";
 
 export default class BookingService {
   async createGuestBooking(data: CreateBookingType) {
@@ -74,6 +75,36 @@ export default class BookingService {
           },
         });
 
+        // 3. Send booking details to notification service via message queue
+        try {
+          // Get flight details to include in notification
+          const flight = await tx.flight.findUnique({
+            where: { id: data.flightId },
+          });
+
+          // Prepare message payload
+          const notificationPayload = {
+            type: "BOOKING_CREATED",
+            booking: {
+              id: booking.id,
+              status: booking.status,
+              travelers: booking.travelers,
+              flight: flight,
+              bookingTime: new Date(),
+            },
+            contact: {
+              email: contacts.email,
+              phone: contacts.phone,
+            },
+          };
+
+          // Publish message to queue after transaction completes
+          publishMessage("notifications", notificationPayload);
+        } catch (error) {
+          // Log error but don't fail the booking process
+          console.error("Failed to send notification message:", error);
+        }
+
         return booking;
       });
     } catch (error) {
@@ -114,9 +145,45 @@ export default class BookingService {
     bookingId: number,
     status: "CONFIRMED" | "CANCELLED" | "PENDING",
   ) {
-    return await prisma.booking.update({
+    const booking = await prisma.booking.update({
       where: { id: bookingId },
       data: { status },
+      include: {
+        travelers: true,
+        contact: true,
+      },
     });
+
+    // Send status update notification
+    try {
+      // Get flight details
+      const flight = await prisma.flight.findUnique({
+        where: { id: booking.flightId },
+      });
+
+      // Prepare message payload
+      const notificationPayload = {
+        type: "BOOKING_STATUS_CHANGED",
+        booking: {
+          id: booking.id,
+          status: booking.status,
+          travelers: booking.travelers,
+          flight: flight,
+          updateTime: new Date(),
+        },
+        contact: {
+          email: booking.contact.email,
+          phone: booking.contact.phone,
+        },
+      };
+
+      // Publish message to queue
+      await publishMessage("notifications", notificationPayload);
+    } catch (error) {
+      // Log error but don't fail the status update
+      console.error("Failed to send status update notification:", error);
+    }
+
+    return booking;
   }
 }

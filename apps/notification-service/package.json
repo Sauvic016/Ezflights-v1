@@ -12,10 +12,14 @@
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/amqplib": "^0.10.7",
     "@types/express": "^5.0.1",
+    "@types/nodemailer": "^6.4.17",
+    "amqplib": "^0.10.8",
     "dotenv": "^16.5.0",
     "esbuild": "^0.25.3",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "nodemailer": "^7.0.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

@@ -20,5 +20,5 @@ router.get("/users/:id", getUserById);
 router.put("/update", verifyUserRequest, updateUserDetails);
 router.get("/isAdmin", isAdmin);
 router.post("/grantrole", verifyUserRequest, checkIfAdmin, promoteUser);
-// router.get("/verify-email", UserController.verifyEmailToken);
+
 export default router;
