@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import FlightList from "./Flight";
 import axios from "axios";
+import FlightSkeleton from "./FlightSkeleton";
 // import AirplaneInteriorSeatMap from "@/components/SeatNMeals/NewSeat";
 
 // Mark this page as dynamic
@@ -54,7 +55,7 @@ export default async function FlightsPage({ searchParams }: PageProps) {
 
   return (
     <div className="my-24">
-      <Suspense fallback={<div>Loading flights...</div>}>
+      <Suspense fallback={<FlightSkeleton />}>
         <FlightList flightsData={flightsData} />
       </Suspense>
     </div>

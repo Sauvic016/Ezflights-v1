@@ -40,11 +40,9 @@ const FlightCards = ({ flights, handleClick }: FlightCardsProps) => {
   // };
 
   return (
-    <motion.div
-      className="space-y-4"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+    <motion.div className="space-y-4"// variants={containerVariants}
+      // initial="hidden"
+      // animate="visible"
     >
       {flights.map((flight) => (
         <motion.div key={flight.id} variants={fadeInUp} className="group">
@@ -124,7 +122,8 @@ const FlightCards = ({ flights, handleClick }: FlightCardsProps) => {
                 {/* Book Now Button */}
                 <div className="flex justify-center sm:justify-end items-center">
                   <Button
-                    onClick={() => handleClick(flight)}
+                    onClick={() =>
+                      handleClick(flight)}
                     className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-md hover:shadow-lg transition-all duration-300"
                   >
                     Book Now

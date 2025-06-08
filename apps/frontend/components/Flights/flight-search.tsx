@@ -35,7 +35,8 @@ import { flightSearchSchema } from "@/schemas/FlightSearchSchema";
 
 import { useFlightSearch } from "@/hooks/use-flightSearch";
 import { useFlightSearchParams } from "@/hooks/use-flightSearchParams";
-import { useTravellerStore } from "@/store/booking-store";
+import { useUserDetails } from "@/store/Store";
+import { ComboBoxResponsive } from "../Combobox";
 // import useDebounce from "@/hooks/use-debounce";
 
 type FlightSearchValues = z.infer<typeof flightSearchSchema>;
@@ -58,7 +59,7 @@ const FlightSearch = () => {
   // const router = useRouter();
   // const searchParams = useSearchParams();
 
-  const { setTravellersCount } = useTravellerStore();
+  const { setTravelerLimit } = useUserDetails();
 
   const form = useForm<FlightSearchValues>({
     resolver: zodResolver(flightSearchSchema),
@@ -102,6 +103,7 @@ const FlightSearch = () => {
     setActiveField(source);
     form.setValue(source, value);
   };
+  console.log("rendered");
 
   const handlePassengerCountChange = (travellercount: {
     adults: number;
@@ -109,7 +111,7 @@ const FlightSearch = () => {
   }) => {
     const total = Object.values(travellercount).reduce((sum, v) => sum + v, 0);
 
-    setTravellersCount(Number(total));
+    setTravelerLimit(Number(total));
   };
 
   return (
@@ -194,6 +196,7 @@ const FlightSearch = () => {
                                       }
                                       placeholder="Departure City"
                                     />
+                                    {/* <ComboBoxResponsive /> */}
                                   </div>
                                 </FormControl>
                                 <FormMessage />

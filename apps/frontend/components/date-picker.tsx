@@ -15,7 +15,7 @@ import {
 
 interface DatePickerProps {
   date?: Date;
-  onSelect?: (date: Date | undefined) => void;
+  onSelect: (date: Date | undefined) => void;
   className?: string;
   source?: "userDetails" | "flightSearch";
 }
@@ -27,13 +27,13 @@ export function DatePicker({
   source = "flightSearch",
 }: DatePickerProps) {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    date || new Date(),
+    undefined,
   );
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (newDate: Date | undefined) => {
     setSelectedDate(newDate);
-    onSelect?.(newDate);
+    onSelect(newDate);
     setOpen(false);
   };
 
@@ -51,9 +51,11 @@ export function DatePicker({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {selectedDate
-              ? format(selectedDate, "LLL dd, y")
-              : <span>Pick a date</span>}
+            {selectedDate ? (
+              format(selectedDate, "LLL dd, y")
+            ) : (
+              <span>Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -63,38 +65,39 @@ export function DatePicker({
             onSelect={handleSelect}
             initialFocus
             fromYear={source === "userDetails" ? 1900 : undefined}
-            toYear={source === "userDetails"
-              ? new Date().getFullYear()
-              : undefined}
+            toYear={
+              source === "userDetails" ? new Date().getFullYear() : undefined
+            }
             captionLayout="dropdown-buttons"
             className="rounded-md border shadow-md"
             classNames={{
-              caption: source === "userDetails"
-                ? "flex justify-center pt-1 relative items-center"
-                : "flex justify-center pt-1 relative items-center text-sm font-medium",
-              caption_label: source === "userDetails"
-                ? "hidden"
-                : "text-sm font-medium",
-              nav: source === "userDetails"
-                ? "hidden"
-                : "space-x-1 flex items-center",
-              nav_button: source === "userDetails" ? "hidden" : cn(
-                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-                "text-sky-600",
-              ),
-              nav_button_previous: source === "userDetails"
-                ? "hidden"
-                : "absolute left-1",
-              nav_button_next: source === "userDetails"
-                ? "hidden"
-                : "absolute right-1",
+              caption:
+                source === "userDetails"
+                  ? "flex justify-center pt-1 relative items-center"
+                  : "flex justify-center pt-1 relative items-center text-sm font-medium",
+              caption_label:
+                source === "userDetails" ? "hidden" : "text-sm font-medium",
+              nav:
+                source === "userDetails"
+                  ? "hidden"
+                  : "space-x-1 flex items-center",
+              nav_button:
+                source === "userDetails"
+                  ? "hidden"
+                  : cn(
+                      "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+                      "text-sky-600",
+                    ),
+              nav_button_previous:
+                source === "userDetails" ? "hidden" : "absolute left-1",
+              nav_button_next:
+                source === "userDetails" ? "hidden" : "absolute right-1",
               table: "w-full border-collapse space-y-1",
               head_row: "flex",
               head_cell:
                 "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
               row: "flex w-full mt-2",
-              cell:
-                "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+              cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
               day: cn(
                 "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
                 source === "userDetails" &&
@@ -112,15 +115,14 @@ export function DatePicker({
               day_range_middle:
                 "aria-selected:bg-accent aria-selected:text-accent-foreground",
               day_hidden: "invisible",
-              dropdown: source === "userDetails"
-                ? "border rounded-md shadow-sm bg-white"
-                : "hidden",
-              dropdown_icon: source === "userDetails"
-                ? cn(
-                  "ml-2 h-4 w-4",
-                  "text-sky-600",
-                )
-                : "hidden",
+              dropdown:
+                source === "userDetails"
+                  ? "border rounded-md shadow-sm bg-white"
+                  : "hidden",
+              dropdown_icon:
+                source === "userDetails"
+                  ? cn("ml-2 h-4 w-4", "text-sky-600")
+                  : "hidden",
             }}
           />
         </PopoverContent>

@@ -81,13 +81,3 @@ export const useBookingStore = create<BookingState & BookingActions>()(
     },
   ),
 );
-
-interface TravellerState {
-  travelers: number;
-  setTravellersCount: (n: number) => void;
-}
-
-export const useTravellerStore = create<TravellerState>((set) => ({
-  travelers: 1,
-  setTravellersCount: (n) => set({ travelers: n }),
-}));

@@ -9,14 +9,16 @@ export default function Header() {
     <header className="fixed top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between ">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-blue-600">
-            <PlaneTakeoffIcon className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-xl font-bold mr-2 md:mr-0">EzFlights</span>
+          <Link href="/" className="flex items-center gap-2 cursor-pointer  ">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-blue-600">
+              <PlaneTakeoffIcon className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-xl font-bold mr-2 md:mr-0">EzFlights</span>
+          </Link>
         </div>
         <nav className="hidden md:flex gap-8">
           <Link
-            href="#"
+            href="/"
             className="text-sm font-medium text-gray-600 hover:text-sky-500 transition-colors"
           >
             Flights

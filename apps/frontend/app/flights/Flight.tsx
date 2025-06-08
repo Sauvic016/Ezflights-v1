@@ -61,8 +61,9 @@ export default function FlightList({
 }: {
   flightsData: FlightApiResponse;
 }) {
-  const [sortBy, setSortBy] =
-    useState<keyof (typeof flightsData.Items)[0]>("basePrice");
+  const [sortBy, setSortBy] = useState<keyof (typeof flightsData.Items)[0]>(
+    "basePrice",
+  );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   // const [filterAirline, setFilterAirline] = useState("");
   // const [currentPage, setCurrentPage] = useState(1);
@@ -115,7 +116,8 @@ export default function FlightList({
             <Label htmlFor="sortBy" className="text-sky-700">
               Sort by
             </Label>
-            {/* <Select value={sortBy} onValueChange={setSortBy}>
+            {
+              /* <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="bg-white/50 border-sky-200">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -125,12 +127,12 @@ export default function FlightList({
                 <SelectItem value="arrivalTime">Arrival Time</SelectItem>
                 <SelectItem value="duration">Duration</SelectItem>
               </SelectContent>
-            </Select> */}
+            </Select> */
+            }
             <Select
               value={sortBy}
               onValueChange={(value) =>
-                setSortBy(value as keyof (typeof flightsData.Items)[0])
-              }
+                setSortBy(value as keyof (typeof flightsData.Items)[0])}
             >
               <SelectTrigger className="bg-white/50 border-sky-200">
                 <SelectValue placeholder="Sort by" />
@@ -196,7 +198,8 @@ export default function FlightList({
             <div>
               <p className="text-sm">
                 <Clock className="inline mr-1 h-4 w-4" />{" "}
-                {format(new Date(recommendedFlight!.departureTime), "hh:mm a")}{" "}
+                {format(new Date(recommendedFlight!.departureTime), "hh:mm a")}
+                {" "}
                 - {format(new Date(recommendedFlight!.arrivalTime), "hh:mm a")}
               </p>
             </div>
@@ -210,7 +213,7 @@ export default function FlightList({
           </CardFooter>
         </Card>
 
-        <motion.div variants={fadeInUp} className="space-y-4">
+        <div className="space-y-4">
           {flightsData.Items.map((flight) => (
             <FlightCards
               key={flight.id}
@@ -218,23 +221,21 @@ export default function FlightList({
               handleClick={handleClick}
             />
           ))}
-        </motion.div>
+        </div>
       </div>
 
       <div className="flex justify-between items-center mt-6">
         <Button // onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          // disabled={currentPage === 1}
-          className="bg-sky-600 hover:bg-sky-700 text-white"
-        >
+         // disabled={currentPage === 1}
+        className="bg-sky-600 hover:bg-sky-700 text-white">
           <ChevronLeft className="mr-2 h-4 w-4" /> Previous
         </Button>
         <span className="text-sky-800">
           Page {1} of {flightsData.totalPages}
         </span>
         <Button // onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          // disabled={currentPage === totalPages}
-          className="bg-sky-600 hover:bg-sky-700 text-white"
-        >
+         // disabled={currentPage === totalPages}
+        className="bg-sky-600 hover:bg-sky-700 text-white">
           Next <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
